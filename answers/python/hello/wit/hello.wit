@@ -1,0 +1,5 @@
+package example:demo
+
+world hello {
+      export wasi:cli/run
+}
