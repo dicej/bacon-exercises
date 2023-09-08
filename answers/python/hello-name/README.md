@@ -17,5 +17,5 @@ componentize-py -d wit -w hello-name componentize app -o app.wasm
 You'll need to install Rust first.  Then:
 
 ```
-cargo run --release --mantifest-path runner/Cargo.toml -- app.wasm
+cargo run --release --manifest-path runner/Cargo.toml -- app.wasm
 ```
