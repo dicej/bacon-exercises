@@ -1,0 +1,7 @@
+package example:demo
+
+world hello-name {
+  import who-to-greet: func() -> string
+  
+  export wasi:cli/run
+}

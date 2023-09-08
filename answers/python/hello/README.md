@@ -11,3 +11,17 @@ pip install componentize-py
 ```
 componentize-py -d wit -w hello componentize app -o app.wasm
 ```
+
+## Sanity check
+
+You'll need Wasmtime 13 with Component Model support enabled.  First install Rust, then:
+
+```
+cargo install --locked --git https://github.com/bytecodealliance/wasmtime --branch release-13.0.0
+```
+
+Then, run the component using:
+
+```
+wasmtime --wasm-features component-model app.wasm
+```
