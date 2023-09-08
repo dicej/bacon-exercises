@@ -2,6 +2,7 @@ use {
     anyhow::{anyhow, Result},
     async_trait::async_trait,
     clap::Parser,
+    example::demo::greeter_candidates::{self, Candidate, Person},
     tokio::fs,
     wasmtime::{
         component::{Component, Linker},
@@ -44,16 +45,33 @@ pub struct Options {
 
 wasmtime::component::bindgen!({
     path: "../wit",
-    world: "hello-name",
+    world: "demo",
     async: true
 });
 
 struct Host;
 
 #[async_trait]
-impl HelloNameImports for Host {
-    async fn who_to_greet(&mut self) -> Result<String> {
-        Ok("you".into())
+impl greeter_candidates::Host for Host {
+    async fn get(&mut self) -> Result<Vec<Candidate>> {
+        Ok(vec![
+            Candidate::Hermit(Person {
+                name: "Tom".into(),
+                lego_count: Some(42),
+            }),
+            Candidate::Excited(Person {
+                name: "Sally".into(),
+                lego_count: None,
+            }),
+            Candidate::Excited(Person {
+                name: "Reggie".into(),
+                lego_count: Some(0),
+            }),
+            Candidate::Excited(Person {
+                name: "Jules".into(),
+                lego_count: Some(592),
+            }),
+        ])
     }
 }
 
@@ -90,7 +108,7 @@ async fn main() -> Result<()> {
 
     let mut linker = Linker::<Ctx>::new(&engine);
     command::add_to_linker(&mut linker)?;
-    HelloName::add_to_linker(&mut linker, |ctx| &mut ctx.host)?;
+    Demo::add_to_linker(&mut linker, |ctx| &mut ctx.host)?;
 
     let mut table = Table::new();
     let mut wasi = WasiCtxBuilder::new();
@@ -126,11 +144,14 @@ async fn main() -> Result<()> {
         )
         .await?;
 
-    HelloName::new(&mut store, &instance)?
-        .wasi_cli_run()
-        .call_run(&mut store)
-        .await?
-        .map_err(|()| anyhow!("run function returned an error"))?;
+    println!(
+        "result: {:?}",
+        Demo::new(&mut store, &instance)?
+            .example_demo_greeter()
+            .call_greet(&mut store)
+            .await?
+            .map_err(|s| anyhow!("greet function returned an error: {s}"))?
+    );
 
     Ok(())
 }

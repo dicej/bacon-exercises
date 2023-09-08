@@ -9,7 +9,7 @@ pip install componentize-py
 ## Building
 
 ```
-componentize-py -d wit -w hello-name componentize app -o app.wasm
+componentize-py -d wit -w demo componentize app -o app.wasm
 ```
 
 ## Sanity check
